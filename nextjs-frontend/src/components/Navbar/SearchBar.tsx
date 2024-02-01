@@ -44,6 +44,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export function SearchBar() {
+	const router = useRouter();
 	const searchParams = useSearchParams();
 
 	return (
@@ -51,8 +52,21 @@ export function SearchBar() {
 			<SearchIconWrapper>
 				<SearchIcon />
 			</SearchIconWrapper>
-			<form>
-				<StyledInputBase name="search" type="search" placeholder="Pesquisar…" />
+			<form
+				onSubmit={(event) => {
+					event.preventDefault();
+					const formData = new FormData(event.target as HTMLFormElement);
+					const search = formData.get("search") as string;
+					const category_id = searchParams.get("category_id");
+					searchProducts(router, search, category_id);
+				}}
+			>
+				<StyledInputBase
+					name="search"
+					type="search"
+					placeholder="Pesquisar…"
+					defaultValue={searchParams.get("search")}
+				/>
 			</form>
 		</Search>
 	);

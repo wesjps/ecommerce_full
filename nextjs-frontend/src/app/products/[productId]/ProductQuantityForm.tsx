@@ -8,17 +8,12 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { Total } from "../../../components/Total";
+import { addToCartAction } from "../../../server-actions/cart.action";
 
 const schema = yup
 	.object({
 		product_id: yup.string().uuid().required(),
 		quantity: yup.number().required().integer().min(1),
-		attributes: yup.array().of(
-			yup.object({
-				product_attribute_id: yup.number().required(),
-				quantity: yup.number().required().min(1),
-			})
-		),
 	})
 	.required();
 
@@ -45,20 +40,7 @@ export function ProductQuantityForm(props: { product: Product }) {
 	}, [watch, product, getValues]);
 
 	return (
-		<Box
-			component="form"
-			sx={{ p: 1 }}
-			// action={async (formData: FormData) => {
-			// 	const isValid = await trigger();
-			// 	if (!isValid) {
-			// 		return;
-			// 	}
-			// 	const newFormData = new FormData();
-			// 	newFormData.append("quantity", formData.get("quantity") as string);
-			// 	newFormData.append("product_id", formData.get("product_id") as string);
-			// 	await addToCartAction(newFormData);
-			// }}
-		>
+		<Box component="form" sx={{ p: 1 }} action={addToCartAction}>
 			<Box
 				sx={{
 					display: "flex",
