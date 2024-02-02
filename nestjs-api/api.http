@@ -1,8 +1,10 @@
 GET http://localhost:3000/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDY4ODI4MzMsImV4cCI6MTcwNjg4MzQzM30.x2kHQWmFnY5Q7Zqp6hPURniTKx-rf5hH2PjYXo4ImCs
 
 ###
 POST http://localhost:3000/products
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDY4ODI4MzMsImV4cCI6MTcwNjg4MzQzM30.x2kHQWmFnY5Q7Zqp6hPURniTKx-rf5hH2PjYXo4ImCs
 
 {
     "name":"Product 1",
@@ -14,6 +16,7 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/orders
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDY4ODI4MzMsImV4cCI6MTcwNjg4MzQzM30.x2kHQWmFnY5Q7Zqp6hPURniTKx-rf5hH2PjYXo4ImCs
+
 
 ###
 POST http://localhost:3000/orders

@@ -50,7 +50,12 @@ async function ListProductsPage({
 }: {
 	searchParams: { search?: string; category_id?: string };
 }) {
-	const products = await getProducts({
+	// const products = await getProducts({
+	// 	search: searchParams.search,
+	// 	category_id: searchParams.category_id,
+	// });
+
+	const products = await new ProductService().getProducts({
 		search: searchParams.search,
 		category_id: searchParams.category_id,
 	});
