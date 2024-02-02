@@ -42,7 +42,7 @@ export class Order {
   @OneToMany(
     () => OrderItem,
     (item) => {
-      item.order;
+      item.order, { cascade: ['insert'] };
     },
   )
   items: OrderItem[];

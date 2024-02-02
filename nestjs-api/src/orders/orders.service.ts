@@ -3,34 +3,65 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { In, Repository } from 'typeorm';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../products/entities/product.entity';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class OrdersService {
-  constructor(@InjectRepository(Order) private orderRepo: Repository<Order>,
-  @InjectRepository(Product) private productRepo: Repository<Product>) {}
+  constructor(
+    @InjectRepository(Order) private orderRepo: Repository<Order>,
+    @InjectRepository(Product) private productRepo: Repository<Product>,
+    private amqpConnection: AmqpConnection,
+  ) {}
 
-  async create(createOrderDto: CreateOrderDto) {
-    const productIds = createOrderDto.items.map(item => item.product_id)
-    const products = await this.productRepo.findBy({id:In(productIds)})
-    Order.create({
-      client_id:1,
-      items: createOrderDto.items.map(item=>{
-        return{
-          price:,
+  async create(createOrderDto: CreateOrderDto & { client_id: number }) {
+    console.log('Service;');
+    console.log(createOrderDto);
+    const productIds = createOrderDto.items.map((item) => item.product_id);
+    const uniqueProductIds = [...new Set(productIds)];
+    const products = await this.productRepo.findBy({
+      id: In(uniqueProductIds),
+    });
+
+    if (products.length !== uniqueProductIds.length) {
+      throw new Error(
+        `Algum produto não existe. Produtos passados: ${productIds}, produtos encontrados: ${products.map((product) => product.id)}`,
+      );
+    }
+    const order = Order.create({
+      client_id: createOrderDto.client_id,
+      items: createOrderDto.items.map((item) => {
+        const product = products.find(
+          (product) => product.id === item.product_id,
+        );
+        return {
+          price: product.price,
           product_id: item.product_id,
-          quantity:item.quantity
-        }
-      })
-    })
-    return 'This action adds a new order';
+          quantity: item.quantity,
+        };
+      }),
+    });
+
+    await this.orderRepo.save(order);
+    await this.amqpConnection.publish('amq.direct', 'OrderCreated', {
+      order_id: order.id,
+      card_hash: createOrderDto.card_hash,
+      total: order.total,
+    });
+    return order;
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  findAll(client_id: number) {
+    return this.orderRepo.find({
+      where: { client_id },
+      order: { created_at: 'DESC' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  findOne(id: string, client_id: number) {
+    return this.orderRepo.findOneByOrFail({
+      id,
+      client_id,
+    });
   }
 }
