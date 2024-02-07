@@ -20,7 +20,6 @@ async function CheckoutSuccessPage({
 }) {
 	const orderService = OrderServiceFactory.create();
 	const order = await orderService.getOrder(params.orderId);
-	console.log(order);
 	return (
 		<Box>
 			<Grid2 container spacing={2}>

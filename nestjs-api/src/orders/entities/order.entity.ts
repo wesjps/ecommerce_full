@@ -42,7 +42,7 @@ export class Order {
   @OneToMany(
     () => OrderItem,
     (item) => {
-      item.order, { cascade: ['insert'] };
+      item.order, { cascade: ['insert'], eager: true };
     },
   )
   items: OrderItem[];
@@ -62,5 +62,29 @@ export class Order {
       return sum + item.price * item.quantity;
     }, 0);
     return order;
+  }
+
+  pay() {
+    if (this.status === OrderStatus.PAID) {
+      throw new Error('Order already paid');
+    }
+
+    if (this.status === OrderStatus.FAILED) {
+      throw new Error('Order already failed');
+    }
+
+    this.status = OrderStatus.PAID;
+  }
+
+  fail() {
+    if (this.status === OrderStatus.FAILED) {
+      throw new Error('Order already failed');
+    }
+
+    if (this.status === OrderStatus.PAID) {
+      throw new Error('Order already paid');
+    }
+
+    this.status = OrderStatus.FAILED;
   }
 }
